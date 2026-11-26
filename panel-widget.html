@@ -1,0 +1,1860 @@
+<style>
+.sp-wrap * { box-sizing: border-box; margin: 0; padding: 0; }
+.sp-wrap {
+  max-width: 600px;
+  padding: 1.5rem 0;
+  font-family: inherit;
+  color: inherit;
+  position: relative;
+}
+.sp-field { margin-bottom: 1.5rem; }
+.sp-field label {
+  display: block;
+  font-size: 0.78em;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 10px;
+}
+.sp-field-sub { margin-bottom: 1.25rem; }
+.sp-field-sub label {
+  display: block;
+  font-size: 0.75em;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #bbb;
+  margin-bottom: 8px;
+}
+.sp-species-reveal {
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid #f0f0f0;
+}
+.sp-species-reveal label {
+  display: block;
+  font-size: 0.75em;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #bbb;
+  margin-bottom: 8px;
+}
+.sp-size-note {
+  font-size: 0.85em;
+  color: #888;
+  margin-bottom: 1.25rem;
+  font-style: italic;
+}
+.sp-btn-grid { display: grid; gap: 8px; }
+.sp-btn-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.sp-btn-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.sp-btn-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.sp-btn-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+.sp-opt-btn {
+  font-family: inherit;
+  font-size: 0.9em;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: #1a1a1a;
+  background: #fff;
+  border: 1px solid #d4d4d4;
+  border-radius: 3px;
+  padding: 14px 8px 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+  line-height: 1.4;
+}
+.sp-opt-btn:hover { border-color: #999; background: #fafafa; }
+.sp-opt-btn.selected { border: 2px solid #0D8543; background: #f2faf5; font-weight: 500; color: #0D8543; }
+.sp-opt-btn:disabled { opacity: 0.35; cursor: not-allowed; border-color: #e0e0e0; background: #fafafa; color: #aaa; }
+.sp-opt-btn .opt-label { display: block; }
+.sp-opt-btn .opt-sub { font-size: 0.85em; color: #888; display: block; margin-top: 3px; }
+.sp-opt-btn.selected .opt-sub { color: #0D8543; opacity: 0.7; }
+.sp-addon-grid { display: grid; gap: 8px; grid-template-columns: repeat(3, 1fr); }
+.sp-addon-btn {
+  font-family: inherit;
+  font-size: 0.85em;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: #1a1a1a;
+  background: #fff;
+  border: 1px solid #d4d4d4;
+  border-radius: 3px;
+  padding: 14px 8px 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+  line-height: 1.4;
+  position: relative;
+}
+.sp-addon-btn:hover { border-color: #999; background: #fafafa; }
+.sp-addon-btn.selected { border: 2px solid #0D8543; background: #f2faf5; font-weight: 500; color: #0D8543; }
+.sp-addon-btn .addon-label { display: block; }
+.sp-addon-btn .addon-price { font-size: 0.82em; color: #888; display: block; margin-top: 3px; }
+.sp-addon-btn .addon-note { font-size: 0.78em; color: #aaa; display: block; margin-top: 2px; font-style: italic; }
+.sp-addon-btn.selected .addon-price { color: #0D8543; opacity: 0.7; }
+.sp-addon-btn.selected .addon-note { color: #0D8543; opacity: 0.5; }
+.sp-info-icon {
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #999;
+  font-size: 10px;
+  font-style: normal;
+  font-family: Georgia, serif;
+  line-height: 14px;
+  text-align: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: border-color 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sp-info-icon:hover { border-color: #555; color: #555; }
+.sp-addon-btn.selected .sp-info-icon { border-color: #0D8543; color: #0D8543; background: #f2faf5; }
+.sp-popover {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  background: #fff;
+  border: 1px solid #d4d4d4;
+  border-radius: 4px;
+  padding: 14px;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  text-align: left;
+  cursor: default;
+}
+.sp-popover.visible { display: block; }
+.sp-popover::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #fff;
+}
+.sp-popover::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top-color: #d4d4d4;
+  margin-top: 1px;
+}
+.sp-popover-title {
+  font-size: 0.78em;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #555;
+  margin-bottom: 10px;
+}
+.sp-popover-diagrams { display: flex; gap: 12px; margin-bottom: 10px; }
+.sp-popover-diagram { flex: 1; text-align: center; }
+.sp-popover-diagram-label {
+  font-size: 0.78em;
+  color: #888;
+  margin-top: 6px;
+  display: block;
+  font-style: normal;
+  font-weight: 400;
+}
+.sp-popover-note {
+  font-size: 0.80em;
+  color: #888;
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+  margin-top: 2px;
+  font-style: italic;
+  line-height: 1.5;
+}
+.sp-divider { border: none; border-top: 1px solid #e8e8e8; margin: 2rem 0; }
+.sp-price-card {
+  background: #f9f9f7;
+  border: 1px solid #e8e8e8;
+  border-radius: 3px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.sp-price-row { display: flex; justify-content: space-between; align-items: flex-start; }
+.sp-price-label { font-size: 0.78em; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 6px; }
+.sp-price-value-row { display: flex; align-items: baseline; gap: 8px; }
+.sp-price-value { font-size: 2.4em; font-weight: 300; color: #1a1a1a; letter-spacing: -0.01em; }
+.sp-price-gst { font-size: 0.85em; color: #888; }
+.sp-price-breakdown {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e8e8e8;
+  font-size: 0.85em;
+  color: #888;
+}
+.sp-price-breakdown-row { display: flex; justify-content: space-between; margin-top: 4px; }
+.sp-price-breakdown-row.total { color: #1a1a1a; font-weight: 500; padding-top: 6px; border-top: 1px solid #e8e8e8; margin-top: 6px; }
+.sp-disclaimer {
+  font-size: 0.78em;
+  color: #aaa;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e8e8e8;
+  font-style: italic;
+}
+.sp-notice {
+  font-size: 0.9em;
+  padding: 12px 16px;
+  border-radius: 3px;
+  margin-bottom: 1.5rem;
+  background: #fdf8ef;
+  border: 1px solid #e8d8b0;
+  color: #7a5c1e;
+}
+.sp-contact { display: none; }
+.sp-contact.visible { display: block; margin-top: 2rem; }
+.sp-contact h3 {
+  font-size: 0.78em;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 1.25rem;
+}
+.sp-wrap input[type=text], .sp-wrap input[type=email] {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  font-family: inherit;
+  font-size: 0.95em;
+  color: #1a1a1a;
+  background: #fff;
+  border: 1px solid #d4d4d4;
+  border-radius: 3px;
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+  box-shadow: none;
+}
+.sp-wrap textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 0.95em;
+  color: #1a1a1a;
+  background: #fff;
+  border: 1px solid #d4d4d4;
+  border-radius: 3px;
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+  box-shadow: none;
+  resize: vertical;
+  line-height: 1.5;
+}
+.sp-wrap input:focus, .sp-wrap textarea:focus { border-color: #1a1a1a; }
+.sp-wrap input::placeholder, .sp-wrap textarea::placeholder { color: #bbb; }
+.sp-wrap input[type=email].invalid { border-color: #c0392b; }
+.sp-address-wrap { position: relative; margin-top: 10px; }
+.sp-address-suggestions {
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: #fff; border: 1px solid #d4d4d4; border-top: none;
+  border-radius: 0 0 3px 3px; z-index: 100; max-height: 200px; overflow-y: auto;
+}
+.sp-address-suggestions div {
+  padding: 10px 12px; font-size: 0.875em; cursor: pointer; color: #1a1a1a;
+}
+.sp-address-suggestions div:hover { background: #f5f5f5; }
+.sp-submit {
+  display: block;
+  width: 100%;
+  height: 46px;
+  font-family: inherit;
+  font-size: 0.9em;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #1a1a1a;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-appearance: none;
+}
+.sp-submit:hover { background: #333; }
+.sp-submit:disabled { background: #999; cursor: not-allowed; }
+.sp-error { font-size: 0.85em; color: #c0392b; margin-top: 8px; display: none; }
+.sp-success { display: none; text-align: center; padding: 3rem 1rem; }
+.sp-success-icon { font-size: 2rem; margin-bottom: 1rem; }
+.sp-success h3 { font-size: 1.05em; font-weight: 400; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+.sp-success p { font-size: 0.9em; color: #888; }
+
+.sp-slider-wrap { padding: 0 0 8px; user-select: none; }
+.sp-custom-slider { position: relative; height: 36px; display: flex; align-items: center; cursor: pointer; }
+.sp-slider-track-bg {
+  position: absolute; left: 0; right: 0; height: 4px;
+  background: #d4d4d4; border-radius: 2px;
+}
+.sp-slider-track-fill {
+  position: absolute; left: 0; height: 4px;
+  background: #0D8543; border-radius: 2px; width: 0;
+  
+}
+.sp-slider-thumb {
+  position: absolute;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #0D8543;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  cursor: grab;
+  transform: translateX(-50%);
+  left: 0;
+  transition: box-shadow 0.1s;
+  z-index: 2;
+}
+.sp-slider-thumb:active { cursor: grabbing; box-shadow: 0 2px 8px rgba(0,0,0,0.22); }
+.sp-slider-thumb.dragging { transition: none; }
+.sp-slider-markers {
+  position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+  pointer-events: none;
+}
+.sp-slider-marker {
+  position: absolute; top: 50%; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.sp-slider-marker-tick {
+  background: #bbb; border-radius: 1px; width: 2px;
+}
+.sp-slider-readout {
+  font-size: 1.1em;
+  font-weight: 500;
+  color: #0D8543;
+  margin-bottom: 8px;
+  letter-spacing: 0.01em;
+}
+.sp-slider-label-row {
+  position: relative; height: 28px; margin-top: 4px;
+}
+.sp-slider-label {
+  position: absolute; transform: translateX(-50%);
+  font-size: 0.75em; color: #888; text-align: center; white-space: nowrap;
+}
+.sp-slider-label.active { color: #0D8543; font-weight: 500; }
+.sp-slider-label-end {
+  position: absolute; right: 0;
+  font-size: 0.75em; color: #888; text-align: right; white-space: nowrap;
+}
+.sp-slider-label-end.active { color: #c0392b; font-weight: 500; }
+.sp-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75em;
+  color: #888;
+  line-height: 1.3;
+  margin-top: 4px;
+}
+.sp-slider-labels span { text-align: center; flex: 1; cursor: pointer; }
+.sp-slider-labels span.active { color: #0D8543; font-weight: 500; }
+.sp-slider-labels small { font-size: 0.9em; color: #bbb; display: block; }
+
+.sp-size-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 0.5rem;
+}
+.sp-size-col label {
+  display: block;
+  font-size: 0.75em;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #bbb;
+  margin-bottom: 6px;
+}
+.sp-size-col .sp-slider-readout {
+  font-size: 0.95em;
+  margin-bottom: 6px;
+  cursor: text;
+  border-bottom: 1px dashed transparent;
+  transition: border-color 0.15s;
+}
+.sp-size-col .sp-slider-readout:hover { border-bottom-color: #0D8543; }
+.sp-size-col .sp-slider-readout:focus { outline: none; border-bottom: 2px solid #0D8543; }
+.sp-size-col .sp-custom-slider {
+  height: 28px;
+}
+@media (max-width: 480px) {
+  .sp-size-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="sp-wrap">
+  <!-- Price badge -->
+  <div id="sp-form">
+
+    <div class="sp-field">
+      <label>Price range</label>
+      <div class="sp-btn-grid cols-3">
+        <button class="sp-opt-btn" data-group="tier" data-value="budget" onclick="spSelect(this)"><span class="opt-label">Budget</span></button>
+        <button class="sp-opt-btn" data-group="tier" data-value="midrange" onclick="spSelect(this)"><span class="opt-label">Mid-range</span></button>
+        <button class="sp-opt-btn" data-group="tier" data-value="premium" onclick="spSelect(this)"><span class="opt-label">Premium</span></button>
+      </div>
+      <div class="sp-species-reveal" id="sp-species-container" style="display:none">
+        <label>Select species</label>
+        <div id="sp-species-grid" class="sp-btn-grid cols-3"></div>
+      </div>
+    </div>
+
+    <div class="sp-field">
+      <label>Size</label>
+
+      <div class="sp-size-grid">
+        <div class="sp-size-col">
+          <label>Length</label>
+          <div class="sp-slider-readout" id="sp-length-readout" tabindex="0" role="spinbutton" aria-label="Length in millimetres">—</div>
+          <div class="sp-custom-slider" id="sp-length-track">
+            <div class="sp-slider-track-bg"></div>
+            <div class="sp-slider-track-fill" id="sp-length-fill"></div>
+            <div class="sp-slider-markers" id="sp-length-markers"></div>
+            <div class="sp-slider-thumb" id="sp-length-thumb"></div>
+          </div>
+        </div>
+        <div class="sp-size-col">
+          <label>Width</label>
+          <div class="sp-slider-readout" id="sp-width-readout" tabindex="0" role="spinbutton" aria-label="Width in millimetres">—</div>
+          <div class="sp-custom-slider" id="sp-width-track">
+            <div class="sp-slider-track-bg"></div>
+            <div class="sp-slider-track-fill" id="sp-width-fill"></div>
+            <div class="sp-slider-markers" id="sp-width-markers"></div>
+            <div class="sp-slider-thumb" id="sp-width-thumb"></div>
+          </div>
+        </div>
+        <div class="sp-size-col">
+          <label>Thickness</label>
+          <div class="sp-slider-readout" id="sp-thickness-readout" tabindex="0" role="spinbutton" aria-label="Thickness in millimetres">—</div>
+          <div class="sp-custom-slider" id="sp-thickness-track">
+            <div class="sp-slider-track-bg"></div>
+            <div class="sp-slider-track-fill" id="sp-thickness-fill"></div>
+            <div class="sp-slider-markers" id="sp-thickness-markers"></div>
+            <div class="sp-slider-thumb" id="sp-thickness-thumb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div id="sp-panel-viz" style="display:none; margin-bottom:1.5rem;">
+      <div style="position:relative;">
+        <svg id="sp-panel-svg" width="100%" viewBox="0 0 560 330" xmlns="http://www.w3.org/2000/svg" style="display:block;"></svg>
+      </div>
+      <p class="sp-size-note" style="margin-top:8px;">We'll confirm your exact sizes and specs when we finalise the order. Colour shown is indicative only.</p>
+    </div>
+
+        <div class="sp-field">
+      <label>Add-ons (optional)</label>
+      <div class="sp-addon-grid" style="grid-template-columns: repeat(2, 1fr);">
+
+        <button class="sp-addon-btn" data-addon="roundover" onclick="spToggleEdge(this)">
+          <span class="addon-label">Roundover edges</span>
+          <span class="addon-note">You can choose which edges later</span>
+          <span class="addon-price">+$65 per panel</span>
+        </button>
+
+        <button class="sp-addon-btn" data-addon="chamfer" onclick="spToggleEdge(this)">
+          <span class="addon-label">Chamfer edges</span>
+          <span class="addon-note">You can choose which edges later</span>
+          <span class="addon-price">+$65 per panel</span>
+        </button>
+
+        <button class="sp-addon-btn" data-addon="cablehole" onclick="spToggleAddon(this)">
+          <span class="addon-label">Cable hole</span>
+          <span class="addon-note">You can specify location later</span>
+          <span class="addon-price">+$75 each</span>
+        </button>
+
+        <button class="sp-addon-btn" data-addon="osmo" onclick="spToggleAddon(this)">
+          <span class="addon-label">Osmo PolyX finish</span>
+          <span class="addon-note">Self-applied</span>
+          <span class="addon-price">+$108 per 750ml</span>
+          <span class="sp-info-icon" onclick="spTogglePopover(event,'sp-popover-osmo')">i</span>
+          <div class="sp-popover" id="sp-popover-osmo">
+            <div class="sp-popover-title">Osmo PolyX finish</div>
+            <div class="sp-popover-note">Available in <strong>matt</strong> or <strong>satin</strong> finish. Let us know your preference in the message field below.</div>
+          </div>
+        </button>
+
+      </div>
+    </div>
+
+
+
+
+
+    <div class="sp-field">
+      <label>Collection or delivery?</label>
+      <div class="sp-btn-grid cols-2">
+        <button class="sp-opt-btn" data-group="delivery" data-value="pickup" onclick="spSelect(this)">
+          <span class="opt-label">Pickup</span>
+          <span class="opt-sub">Free</span>
+        </button>
+        <button class="sp-opt-btn" data-group="delivery" data-value="delivery" onclick="spSelect(this)">
+          <span class="opt-label">Delivery</span>
+          <span class="opt-sub">Cost advised prior to confirmation</span>
+        </button>
+      </div>
+      <div id="sp-address-wrap" style="display:none">
+        <div class="sp-address-wrap">
+          <input type="text" id="sp-address" placeholder="Start typing your address…" autocomplete="off" oninput="spAddressLookup()" />
+          <div class="sp-address-suggestions" id="sp-address-suggestions" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="sp-divider" />
+
+    <div id="sp-price-nudge" style="display:none; font-size:0.9em; color:#888; padding:12px 0; font-style:italic;">
+      Select a price range, species, and move all three size sliders to see an estimated price.
+    </div>
+
+    <div id="sp-price" style="display:none">
+      <div class="sp-price-card">
+        <div class="sp-price-row">
+          <div>
+            <div class="sp-price-label">Estimated price per panel</div>
+            <div class="sp-price-value-row">
+              <div class="sp-price-value" id="sp-price-out">—</div>
+              <div class="sp-price-gst">+GST</div>
+            </div>
+          </div>
+        </div>
+        <div class="sp-price-breakdown" id="sp-price-breakdown" style="display:none">
+          <div class="sp-price-breakdown-row"><span>Base panel</span><span id="sp-base-out"></span></div>
+          <div class="sp-price-breakdown-row" id="sp-addon-roundover-row" style="display:none"><span>Roundover edges</span><span>+$65.00</span></div>
+          <div class="sp-price-breakdown-row" id="sp-addon-chamfer-row" style="display:none"><span>Chamfer edges</span><span>+$65.00</span></div>
+          <div class="sp-price-breakdown-row" id="sp-addon-cablehole-row" style="display:none"><span>Cable hole</span><span>+$75.00</span></div>
+          <div class="sp-price-breakdown-row" id="sp-addon-osmo-row" style="display:none"><span>Osmo PolyX finish (750ml)</span><span>+$108.00</span></div>
+          <div class="sp-price-breakdown-row total"><span>Total</span><span id="sp-total-out"></span></div>
+        </div>
+        <div class="sp-disclaimer">This is an estimate only, subject to confirmation by our team. Prices are subject to availability and valid for 30 days.</div>
+      </div>
+    </div>
+
+    <div id="sp-enquiry" style="display:none">
+      <div class="sp-notice">
+        <strong>Custom enquiry required</strong> — please fill in your details below and we'll get back to you with a price.
+      </div>
+    </div>
+
+    <div id="sp-contact" class="sp-contact">
+      <h3>Your details</h3>
+      <div class="sp-field">
+        <label>Name</label>
+        <input type="text" id="sp-name" placeholder="Your full name" />
+      </div>
+      <div class="sp-field">
+        <label>Email</label>
+        <input type="email" id="sp-email" placeholder="you@example.com" oninput="spValidateEmail(this)" />
+      </div>
+      <div class="sp-field">
+        <label>Phone (optional)</label>
+        <input type="text" id="sp-phone" placeholder="+64 21 000 0000" oninput="spFilterPhone(this)" />
+      </div>
+      <div class="sp-field">
+        <label>Message (optional)</label>
+        <textarea id="sp-msg" placeholder="Any extra details, quantities needed, intended use…" rows="3"></textarea>
+      </div>
+      <div class="sp-error" id="sp-err">Please fill in your name and a valid email address.</div>
+      <button class="sp-submit" id="sp-submit" onclick="spSubmit()">Submit quote request</button>
+    </div>
+
+  <!-- Price badge: fixed inside viewport, shown only when form active -->
+  <div id="sp-price-badge" style="display:none; position:fixed; bottom:24px; right:24px; z-index:1000; background:#0D8543; color:#fff; border-radius:4px; padding:10px 16px; box-shadow:0 4px 16px rgba(0,0,0,0.18); font-family:inherit; min-width:110px; text-align:center; pointer-events:none;">
+    <div style="font-size:0.7em; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.65); margin-bottom:3px;">Est. price</div>
+    <div id="sp-badge-value" style="font-size:1.4em; font-weight:300; letter-spacing:-0.01em; color:#fff;">—</div>
+    <div style="font-size:0.7em; color:rgba(255,255,255,0.5); margin-top:2px;">+GST</div>
+  </div>
+
+  </div>
+
+  <div class="sp-success" id="sp-success">
+    <div class="sp-success-icon">✓</div>
+    <h3>Enquiry sent</h3>
+    <p>Your enquiry has been sent to City Timber. We'll be in touch shortly.</p>
+  </div>
+</div>
+<script>
+// Prices keyed as SP_PRICES[species][width][thickness][length]
+// Width: 400, 600, 800, 1000 | Thickness: 18, 30, 40 | Length: 900, 1200, 1500, 1800, 2100, 2400
+const SP_PRICES = {
+  radiata_pine: {
+    400: {
+      18: { 900:330, 1200:365, 1500:415, 1800:485, 2100:575, 2400:680 },
+      30: { 900:345, 1200:380, 1500:435, 1800:510, 2100:600, 2400:710 },
+      40: { 900:350, 1200:390, 1500:445, 1800:525, 2100:615, 2400:730 },
+    },
+    600: {
+      18: { 900:475, 1200:510, 1500:565, 1800:635, 2100:725, 2400:835 },
+      30: { 900:490, 1200:530, 1500:590, 1800:670, 2100:765, 2400:880 },
+      40: { 900:500, 1200:545, 1500:610, 1800:690, 2100:790, 2400:910 },
+    },
+    800: {
+      18: { 900:645, 1200:685, 1500:745, 1800:820, 2100:910, 2400:1025 },
+      30: { 900:670, 1200:715, 1500:780, 1800:865, 2100:965, 2400:1085 },
+      40: { 900:685, 1200:735, 1500:805, 1800:895, 2100:1000, 2400:1125 },
+    },
+    1000: {
+      18: { 900:850, 1200:895, 1500:955, 1800:1035, 2100:1130, 2400:1245 },
+      30: { 900:880, 1200:930, 1500:1000, 1800:1090, 2100:1195, 2400:1320 },
+      40: { 900:900, 1200:955, 1500:1035, 1800:1125, 2100:1240, 2400:1370 },
+    },
+  },
+  european_beech: {
+    400: {
+      18: { 900:360, 1200:400, 1500:465, 1800:540, 2100:640, 2400:755 },
+      30: { 900:390, 1200:440, 1500:510, 1800:600, 2100:705, 2400:830 },
+      40: { 900:405, 1200:465, 1500:540, 1800:635, 2100:745, 2400:880 },
+    },
+    600: {
+      18: { 900:515, 1200:565, 1500:635, 1800:720, 2100:825, 2400:945 },
+      30: { 900:555, 1200:620, 1500:705, 1800:805, 2100:925, 2400:1060 },
+      40: { 900:585, 1200:660, 1500:750, 1800:860, 2100:990, 2400:1135 },
+    },
+    800: {
+      18: { 900:705, 1200:760, 1500:835, 1800:930, 2100:1045, 2400:1175 },
+      30: { 900:760, 1200:835, 1500:930, 1800:1045, 2100:1175, 2400:1325 },
+      40: { 900:795, 1200:885, 1500:995, 1800:1120, 2100:1260, 2400:1425 },
+    },
+    1000: {
+      18: { 900:920, 1200:990, 1500:1070, 1800:1175, 2100:1295, 2400:1430 },
+      30: { 900:990, 1200:1080, 1500:1190, 1800:1315, 2100:1460, 2400:1620 },
+      40: { 900:1040, 1200:1145, 1500:1265, 1800:1410, 2100:1565, 2400:1745 },
+    },
+  },
+  pacific_kauri: {
+    400: {
+      18: { 900:365, 1200:410, 1500:475, 1800:555, 2100:655, 2400:770 },
+      30: { 900:400, 1200:455, 1500:525, 1800:620, 2100:730, 2400:855 },
+      40: { 900:420, 1200:480, 1500:565, 1800:660, 2100:780, 2400:915 },
+    },
+    600: {
+      18: { 900:525, 1200:580, 1500:650, 1800:740, 2100:850, 2400:975 },
+      30: { 900:575, 1200:645, 1500:730, 1800:835, 2100:960, 2400:1100 },
+      40: { 900:605, 1200:685, 1500:785, 1800:900, 2100:1035, 2400:1185 },
+    },
+    800: {
+      18: { 900:715, 1200:780, 1500:860, 1800:960, 2100:1075, 2400:1210 },
+      30: { 900:780, 1200:865, 1500:965, 1800:1085, 2100:1225, 2400:1380 },
+      40: { 900:825, 1200:920, 1500:1035, 1800:1170, 2100:1325, 2400:1495 },
+    },
+    1000: {
+      18: { 900:940, 1200:1010, 1500:1100, 1800:1205, 2100:1330, 2400:1475 },
+      30: { 900:1020, 1200:1115, 1500:1235, 1800:1365, 2100:1520, 2400:1690 },
+      40: { 900:1070, 1200:1190, 1500:1320, 1800:1475, 2100:1645, 2400:1830 },
+    },
+  },
+  white_ash: {
+    400: {
+      18: { 900:370, 1200:415, 1500:480, 1800:565, 2100:665, 2400:780 },
+      30: { 900:405, 1200:460, 1500:540, 1800:630, 2100:745, 2400:875 },
+      40: { 900:430, 1200:495, 1500:575, 1800:680, 2100:795, 2400:935 },
+    },
+    600: {
+      18: { 900:530, 1200:585, 1500:660, 1800:750, 2100:860, 2400:990 },
+      30: { 900:585, 1200:655, 1500:745, 1800:855, 2100:985, 2400:1130 },
+      40: { 900:615, 1200:700, 1500:805, 1800:925, 2100:1065, 2400:1220 },
+    },
+    800: {
+      18: { 900:725, 1200:790, 1500:870, 1800:975, 2100:1095, 2400:1230 },
+      30: { 900:795, 1200:880, 1500:985, 1800:1110, 2100:1255, 2400:1415 },
+      40: { 900:840, 1200:940, 1500:1065, 1800:1205, 2100:1360, 2400:1535 },
+    },
+    1000: {
+      18: { 900:950, 1200:1025, 1500:1115, 1800:1225, 2100:1355, 2400:1505 },
+      30: { 900:1035, 1200:1140, 1500:1260, 1800:1400, 2100:1555, 2400:1735 },
+      40: { 900:1090, 1200:1215, 1500:1355, 1800:1515, 2100:1690, 2400:1885 },
+    },
+  },
+  macrocarpa: {
+    400: {
+      18: { 900:375, 1200:425, 1500:490, 1800:575, 2100:680, 2400:800 },
+      30: { 900:415, 1200:475, 1500:555, 1800:655, 2100:770, 2400:900 },
+      40: { 900:440, 1200:510, 1500:600, 1800:705, 2100:830, 2400:970 },
+    },
+    600: {
+      18: { 900:540, 1200:600, 1500:675, 1800:775, 2100:885, 2400:1015 },
+      30: { 900:600, 1200:675, 1500:775, 1800:890, 2100:1020, 2400:1170 },
+      40: { 900:640, 1200:730, 1500:840, 1800:965, 2100:1110, 2400:1275 },
+    },
+    800: {
+      18: { 900:735, 1200:805, 1500:895, 1800:1000, 2100:1125, 2400:1265 },
+      30: { 900:815, 1200:910, 1500:1025, 1800:1155, 2100:1305, 2400:1470 },
+      40: { 900:865, 1200:980, 1500:1110, 1800:1255, 2100:1425, 2400:1610 },
+    },
+    1000: {
+      18: { 900:965, 1200:1045, 1500:1145, 1800:1260, 2100:1395, 2400:1550 },
+      30: { 900:1060, 1200:1175, 1500:1305, 1800:1455, 2100:1620, 2400:1805 },
+      40: { 900:1125, 1200:1260, 1500:1410, 1800:1580, 2100:1770, 2400:1975 },
+    },
+  },
+  maple: {
+    400: {
+      18: { 900:375, 1200:425, 1500:490, 1800:575, 2100:680, 2400:800 },
+      30: { 900:415, 1200:475, 1500:555, 1800:655, 2100:770, 2400:905 },
+      40: { 900:440, 1200:510, 1500:600, 1800:705, 2100:830, 2400:970 },
+    },
+    600: {
+      18: { 900:540, 1200:600, 1500:680, 1800:775, 2100:885, 2400:1015 },
+      30: { 900:600, 1200:680, 1500:775, 1800:890, 2100:1020, 2400:1170 },
+      40: { 900:640, 1200:730, 1500:840, 1800:965, 2100:1110, 2400:1275 },
+    },
+    800: {
+      18: { 900:740, 1200:810, 1500:895, 1800:1000, 2100:1125, 2400:1265 },
+      30: { 900:815, 1200:910, 1500:1025, 1800:1155, 2100:1305, 2400:1475 },
+      40: { 900:865, 1200:980, 1500:1110, 1800:1260, 2100:1425, 2400:1610 },
+    },
+    1000: {
+      18: { 900:965, 1200:1045, 1500:1145, 1800:1260, 2100:1395, 2400:1550 },
+      30: { 900:1060, 1200:1175, 1500:1305, 1800:1455, 2100:1620, 2400:1805 },
+      40: { 900:1125, 1200:1260, 1500:1415, 1800:1585, 2100:1770, 2400:1980 },
+    },
+  },
+  purpleheart: {
+    400: {
+      18: { 900:380, 1200:430, 1500:495, 1800:580, 2100:685, 2400:805 },
+      30: { 900:420, 1200:480, 1500:560, 1800:660, 2100:775, 2400:910 },
+      40: { 900:445, 1200:515, 1500:605, 1800:715, 2100:840, 2400:985 },
+    },
+    600: {
+      18: { 900:545, 1200:605, 1500:685, 1800:780, 2100:895, 2400:1025 },
+      30: { 900:605, 1200:685, 1500:785, 1800:900, 2100:1035, 2400:1185 },
+      40: { 900:645, 1200:740, 1500:850, 1800:980, 2100:1125, 2400:1290 },
+    },
+    800: {
+      18: { 900:740, 1200:815, 1500:905, 1800:1010, 2100:1135, 2400:1280 },
+      30: { 900:820, 1200:920, 1500:1035, 1800:1170, 2100:1320, 2400:1490 },
+      40: { 900:875, 1200:990, 1500:1125, 1800:1275, 2100:1445, 2400:1635 },
+    },
+    1000: {
+      18: { 900:970, 1200:1055, 1500:1155, 1800:1275, 2100:1410, 2400:1565 },
+      30: { 900:1070, 1200:1185, 1500:1320, 1800:1470, 2100:1640, 2400:1830 },
+      40: { 900:1140, 1200:1275, 1500:1430, 1800:1605, 2100:1795, 2400:2005 },
+    },
+  },
+  kwila: {
+    400: {
+      18: { 900:385, 1200:435, 1500:500, 1800:590, 2100:695, 2400:815 },
+      30: { 900:425, 1200:490, 1500:570, 1800:675, 2100:790, 2400:925 },
+      40: { 900:455, 1200:525, 1500:620, 1800:730, 2100:855, 2400:1000 },
+    },
+    600: {
+      18: { 900:550, 1200:610, 1500:690, 1800:790, 2100:905, 2400:1040 },
+      30: { 900:615, 1200:695, 1500:800, 1800:915, 2100:1055, 2400:1210 },
+      40: { 900:655, 1200:755, 1500:870, 1800:1000, 2100:1150, 2400:1320 },
+    },
+    800: {
+      18: { 900:750, 1200:825, 1500:915, 1800:1025, 2100:1150, 2400:1300 },
+      30: { 900:835, 1200:935, 1500:1055, 1800:1195, 2100:1350, 2400:1525 },
+      40: { 900:890, 1200:1010, 1500:1150, 1800:1305, 2100:1480, 2400:1670 },
+    },
+    1000: {
+      18: { 900:980, 1200:1065, 1500:1170, 1800:1290, 2100:1430, 2400:1590 },
+      30: { 900:1085, 1200:1205, 1500:1345, 1800:1500, 2100:1675, 2400:1870 },
+      40: { 900:1155, 1200:1300, 1500:1460, 1800:1640, 2100:1840, 2400:2055 },
+    },
+  },
+  cherry: {
+    400: {
+      18: { 900:385, 1200:435, 1500:505, 1800:590, 2100:695, 2400:820 },
+      30: { 900:430, 1200:495, 1500:575, 1800:675, 2100:795, 2400:935 },
+      40: { 900:455, 1200:530, 1500:625, 1800:735, 2100:865, 2400:1010 },
+    },
+    600: {
+      18: { 900:550, 1200:615, 1500:695, 1800:795, 2100:910, 2400:1045 },
+      30: { 900:615, 1200:700, 1500:805, 1800:925, 2100:1060, 2400:1220 },
+      40: { 900:660, 1200:760, 1500:875, 1800:1010, 2100:1165, 2400:1335 },
+    },
+    800: {
+      18: { 900:750, 1200:825, 1500:920, 1800:1030, 2100:1160, 2400:1305 },
+      30: { 900:840, 1200:940, 1500:1065, 1800:1205, 2100:1360, 2400:1535 },
+      40: { 900:895, 1200:1020, 1500:1160, 1800:1315, 2100:1495, 2400:1690 },
+    },
+    1000: {
+      18: { 900:985, 1200:1070, 1500:1175, 1800:1300, 2100:1440, 2400:1600 },
+      30: { 900:1090, 1200:1215, 1500:1355, 1800:1515, 2100:1690, 2400:1885 },
+      40: { 900:1165, 1200:1310, 1500:1475, 1800:1655, 2100:1855, 2400:2075 },
+    },
+  },
+  iroko: {
+    400: {
+      18: { 900:390, 1200:445, 1500:515, 1800:600, 2100:710, 2400:835 },
+      30: { 900:435, 1200:505, 1500:590, 1800:695, 2100:815, 2400:955 },
+      40: { 900:465, 1200:545, 1500:640, 1800:755, 2100:890, 2400:1040 },
+    },
+    600: {
+      18: { 900:560, 1200:625, 1500:710, 1800:810, 2100:930, 2400:1070 },
+      30: { 900:630, 1200:720, 1500:825, 1800:950, 2100:1090, 2400:1255 },
+      40: { 900:675, 1200:780, 1500:900, 1800:1040, 2100:1200, 2400:1375 },
+    },
+    800: {
+      18: { 900:765, 1200:840, 1500:940, 1800:1050, 2100:1185, 2400:1335 },
+      30: { 900:855, 1200:965, 1500:1090, 1800:1235, 2100:1400, 2400:1580 },
+      40: { 900:915, 1200:1045, 1500:1195, 1800:1360, 2100:1545, 2400:1745 },
+    },
+    1000: {
+      18: { 900:995, 1200:1090, 1500:1200, 1800:1325, 2100:1470, 2400:1635 },
+      30: { 900:1115, 1200:1245, 1500:1390, 1800:1555, 2100:1740, 2400:1940 },
+      40: { 900:1190, 1200:1345, 1500:1520, 1800:1710, 2100:1920, 2400:2145 },
+    },
+  },
+  island_rosewood: {
+    400: {
+      18: { 900:390, 1200:445, 1500:515, 1800:605, 2100:715, 2400:840 },
+      30: { 900:440, 1200:510, 1500:595, 1800:700, 2100:825, 2400:965 },
+      40: { 900:470, 1200:550, 1500:650, 1800:765, 2100:900, 2400:1050 },
+    },
+    600: {
+      18: { 900:565, 1200:630, 1500:715, 1800:815, 2100:940, 2400:1075 },
+      30: { 900:635, 1200:725, 1500:835, 1800:960, 2100:1105, 2400:1265 },
+      40: { 900:680, 1200:790, 1500:915, 1800:1055, 2100:1215, 2400:1395 },
+    },
+    800: {
+      18: { 900:765, 1200:845, 1500:945, 1800:1060, 2100:1195, 2400:1345 },
+      30: { 900:860, 1200:975, 1500:1105, 1800:1250, 2100:1415, 2400:1600 },
+      40: { 900:925, 1200:1060, 1500:1210, 1800:1375, 2100:1565, 2400:1770 },
+    },
+    1000: {
+      18: { 900:1005, 1200:1095, 1500:1205, 1800:1335, 2100:1480, 2400:1645 },
+      30: { 900:1120, 1200:1255, 1500:1405, 1800:1575, 2100:1760, 2400:1965 },
+      40: { 900:1200, 1200:1360, 1500:1535, 1800:1730, 2100:1945, 2400:2175 },
+    },
+  },
+  sapele: {
+    400: {
+      18: { 900:395, 1200:445, 1500:520, 1800:610, 2100:715, 2400:840 },
+      30: { 900:440, 1200:510, 1500:600, 1800:705, 2100:825, 2400:970 },
+      40: { 900:475, 1200:555, 1500:650, 1800:770, 2100:900, 2400:1055 },
+    },
+    600: {
+      18: { 900:565, 1200:630, 1500:715, 1800:820, 2100:940, 2400:1080 },
+      30: { 900:635, 1200:730, 1500:835, 1800:965, 2100:1110, 2400:1270 },
+      40: { 900:685, 1200:790, 1500:915, 1800:1060, 2100:1220, 2400:1400 },
+    },
+    800: {
+      18: { 900:770, 1200:850, 1500:945, 1800:1065, 2100:1200, 2400:1350 },
+      30: { 900:865, 1200:975, 1500:1105, 1800:1255, 2100:1420, 2400:1605 },
+      40: { 900:930, 1200:1060, 1500:1215, 1800:1385, 2100:1570, 2400:1775 },
+    },
+    1000: {
+      18: { 900:1005, 1200:1100, 1500:1210, 1800:1340, 2100:1485, 2400:1655 },
+      30: { 900:1125, 1200:1260, 1500:1410, 1800:1580, 2100:1765, 2400:1970 },
+      40: { 900:1205, 1200:1365, 1500:1545, 1800:1740, 2100:1955, 2400:2185 },
+    },
+  },
+  nz_rimu: {
+    400: {
+      18: { 900:410, 1200:465, 1500:545, 1800:640, 2100:750, 2400:880 },
+      30: { 900:465, 1200:540, 1500:640, 1800:750, 2100:885, 2400:1030 },
+      40: { 900:505, 1200:595, 1500:700, 1800:825, 2100:970, 2400:1135 },
+    },
+    600: {
+      18: { 900:585, 1200:660, 1500:755, 1800:865, 2100:995, 2400:1140 },
+      30: { 900:675, 1200:775, 1500:895, 1800:1035, 2100:1190, 2400:1365 },
+      40: { 900:730, 1200:850, 1500:990, 1800:1150, 2100:1325, 2400:1520 },
+    },
+    800: {
+      18: { 900:800, 1200:890, 1500:995, 1800:1125, 2100:1265, 2400:1430 },
+      30: { 900:910, 1200:1040, 1500:1185, 1800:1350, 2100:1535, 2400:1735 },
+      40: { 900:990, 1200:1140, 1500:1315, 1800:1500, 2100:1710, 2400:1935 },
+    },
+    1000: {
+      18: { 900:1040, 1200:1150, 1500:1270, 1800:1415, 2100:1575, 2400:1750 },
+      30: { 900:1185, 1200:1340, 1500:1510, 1800:1700, 2100:1905, 2400:2130 },
+      40: { 900:1280, 1200:1465, 1500:1665, 1800:1890, 2100:2125, 2400:2385 },
+    },
+  },
+  white_oak: {
+    400: {
+      18: { 900:415, 1200:475, 1500:555, 1800:650, 2100:765, 2400:895 },
+      30: { 900:475, 1200:555, 1500:655, 1800:770, 2100:905, 2400:1060 },
+      40: { 900:515, 1200:610, 1500:720, 1800:850, 2100:1000, 2400:1165 },
+    },
+    600: {
+      18: { 900:595, 1200:675, 1500:770, 1800:885, 2100:1015, 2400:1165 },
+      30: { 900:685, 1200:795, 1500:920, 1800:1065, 2100:1225, 2400:1405 },
+      40: { 900:750, 1200:875, 1500:1020, 1800:1185, 2100:1370, 2400:1570 },
+    },
+    800: {
+      18: { 900:810, 1200:905, 1500:1020, 1800:1150, 2100:1295, 2400:1465 },
+      30: { 900:930, 1200:1065, 1500:1220, 1800:1390, 2100:1580, 2400:1785 },
+      40: { 900:1015, 1200:1175, 1500:1355, 1800:1550, 2100:1765, 2400:2000 },
+    },
+    1000: {
+      18: { 900:1055, 1200:1170, 1500:1300, 1800:1445, 2100:1610, 2400:1795 },
+      30: { 900:1210, 1200:1370, 1500:1550, 1800:1750, 2100:1965, 2400:2195 },
+      40: { 900:1310, 1200:1505, 1500:1720, 1800:1950, 2100:2200, 2400:2465 },
+    },
+  },
+  black_walnut: {
+    400: {
+      18: { 900:460, 1200:535, 1500:625, 1800:740, 2100:870, 2400:1015 },
+      30: { 900:545, 1200:650, 1500:770, 1800:915, 2100:1070, 2400:1250 },
+      40: { 900:605, 1200:725, 1500:870, 1800:1030, 2100:1205, 2400:1405 },
+    },
+    600: {
+      18: { 900:665, 1200:765, 1500:880, 1800:1015, 2100:1170, 2400:1340 },
+      30: { 900:795, 1200:935, 1500:1100, 1800:1275, 2100:1475, 2400:1690 },
+      40: { 900:880, 1200:1055, 1500:1245, 1800:1450, 2100:1680, 2400:1920 },
+    },
+    800: {
+      18: { 900:900, 1200:1025, 1500:1165, 1800:1325, 2100:1505, 2400:1700 },
+      30: { 900:1075, 1200:1255, 1500:1455, 1800:1675, 2100:1910, 2400:2165 },
+      40: { 900:1190, 1200:1410, 1500:1650, 1800:1905, 2100:2180, 2400:2475 },
+    },
+    1000: {
+      18: { 900:1170, 1200:1315, 1500:1480, 1800:1665, 2100:1870, 2400:2090 },
+      30: { 900:1385, 1200:1605, 1500:1845, 1800:2100, 2100:2375, 2400:2670 },
+      40: { 900:1530, 1200:1800, 1500:2090, 1800:2395, 2100:2715, 2400:3055 },
+    },
+  },
+};
+
+const SP_TIERS = {
+  budget:   { label: 'Budget',    species: ['radiata_pine','european_beech','pacific_kauri','white_ash','macrocarpa'] },
+  midrange: { label: 'Mid-range', species: ['maple','purpleheart','kwila','cherry','iroko','island_rosewood','sapele'] },
+  premium:  { label: 'Premium',   species: ['nz_rimu','white_oak','black_walnut'] },
+};
+
+const SP_SPECIES_NAMES = {
+  radiata_pine:    'Radiata pine',
+  european_beech:  'European beech',
+  pacific_kauri:   'Pacific kauri',
+  white_ash:       'White ash',
+  macrocarpa:      'Macrocarpa',
+  maple:           'Maple',
+  purpleheart:     'Purpleheart',
+  kwila:           'Kwila',
+  cherry:          'Cherry',
+  iroko:           'Iroko',
+  island_rosewood: 'Island rosewood',
+  sapele:          'Sapele mahogany',
+  nz_rimu:         'NZ rimu',
+  white_oak:       'White oak',
+  black_walnut:    'Black walnut',
+};
+
+const SP_ADDON_PRICES = { roundover: 65, chamfer: 65, cablehole: 75, osmo: 108 };
+
+const spState = { tier: null, species: null, width: null, length: null, thickness: null, delivery: null };
+let spCableHolePos = { x: 0.5, y: 0.1 }; // normalised: x=along length, y=into width from far edge
+const spAddons = { roundover: false, chamfer: false, cablehole: false, osmo: false };
+let spAddressTimer = null;
+let spSelectedAddress = '';
+
+function spFilterPhone(input) {
+  input.value = input.value.replace(/[^\d+() ]/g, '');
+}
+
+function spValidateEmail(input) {
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+  input.classList.toggle('invalid', input.value.length > 0 && !valid);
+}
+
+function spSelect(btn) {
+  if (btn.disabled) return;
+  const group = btn.dataset.group;
+  document.querySelectorAll('.sp-opt-btn[data-group="' + group + '"]').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  spState[group] = btn.dataset.value;
+  if (group === 'tier')     spShowSpecies();
+  if (group === 'delivery') spToggleDelivery();
+  if (group === 'tier' || group === 'species' || group === 'length' || group === 'thickness') spDrawPanel();
+  spUpdate();
+}
+
+function spShowSpecies() {
+  const tier = spState.tier;
+  const container = document.getElementById('sp-species-container');
+  const grid = document.getElementById('sp-species-grid');
+  if (!tier || !SP_TIERS[tier]) { container.style.display = 'none'; return; }
+
+  // Reset species selection if tier changed
+  document.querySelectorAll('.sp-opt-btn[data-group="species"]').forEach(b => b.classList.remove('selected'));
+  spState.species = null;
+
+  const speciesList = SP_TIERS[tier].species;
+  grid.innerHTML = '';
+  speciesList.forEach(sp => {
+    const btn = document.createElement('button');
+    btn.className = 'sp-opt-btn';
+    btn.dataset.group = 'species';
+    btn.dataset.value = sp;
+    btn.setAttribute('onclick', 'spSelect(this)');
+    btn.innerHTML = '<span class="opt-label">' + SP_SPECIES_NAMES[sp] + '</span>';
+    grid.appendChild(btn);
+  });
+
+  // Set columns based on count
+  const count = speciesList.length;
+  grid.className = 'sp-btn-grid cols-' + (count <= 3 ? count : count <= 4 ? 4 : count <= 6 ? 3 : 4);
+
+  container.style.display = 'block';
+}
+
+function spToggleEdge(btn) {
+  const addon = btn.dataset.addon;
+  const other = addon === 'roundover' ? 'chamfer' : 'roundover';
+  // Deselect the other
+  document.querySelectorAll('.sp-addon-btn[data-addon="' + other + '"]').forEach(b => b.classList.remove('selected'));
+  spAddons[other] = false;
+  // Toggle this one
+  spAddons[addon] = !spAddons[addon];
+  btn.classList.toggle('selected', spAddons[addon]);
+  spDrawPanel();
+  spUpdate();
+}
+
+function spToggleAddon(btn) {
+  const addon = btn.dataset.addon;
+  spAddons[addon] = !spAddons[addon];
+  btn.classList.toggle('selected', spAddons[addon]);
+
+  spDrawPanel();
+  spUpdate();
+}
+
+// Width slider — continuous 400–1200mm, price tiers at 600/800/1000, over 1000 = custom/enquiry
+const SP_WIDTH_MIN = 400;
+const SP_WIDTH_MAX = 1200;
+const SP_WIDTH_TIERS = [400, 600, 800, 1000]; // price change points shown as markers
+let spSliderDragging = false;
+let spSliderWidthMm = 0;
+
+function spWidthFromPct(pct) {
+  return Math.round(SP_WIDTH_MIN + pct * (SP_WIDTH_MAX - SP_WIDTH_MIN));
+}
+
+function spPctFromWidth(mm) {
+  return (mm - SP_WIDTH_MIN) / (SP_WIDTH_MAX - SP_WIDTH_MIN);
+}
+
+function spWidthTierKey(mm) {
+  if (mm <= 600)  return '600';
+  if (mm <= 800)  return '800';
+  if (mm <= 1000) return '1000';
+  return 'custom';
+}
+
+const SP_TIER_MARKERS = [
+  { mm: 600,  label: '$', size: 8  },
+  { mm: 800,  label: '$', size: 11 },
+  { mm: 1000, label: '$', size: 14 },
+];
+const SP_MM_LABELS = [600, 800, 1000];
+
+// Length slider config
+const SP_LENGTH_MIN = 500, SP_LENGTH_MAX = 3000;
+const SP_LENGTH_TIERS = [
+  { mm: 900,  label: '$', size: 7  },
+  { mm: 1200, label: '$', size: 9  },
+  { mm: 1500, label: '$', size: 10 },
+  { mm: 1800, label: '$', size: 12 },
+  { mm: 2100, label: '$', size: 13 },
+  { mm: 2400, label: '$', size: 14 },
+];
+const SP_LENGTH_LABELS = [900, 1200, 1500, 1800, 2100, 2400];
+let spSliderLengthMm = 0;
+let spLengthDragging = false;
+
+// Thickness slider config
+const SP_THICK_MIN = 15, SP_THICK_MAX = 55;
+const SP_THICK_TIERS = [
+  { mm: 18, label: '$', size: 8  },
+  { mm: 30, label: '$', size: 11 },
+  { mm: 40, label: '$', size: 14 },
+];
+const SP_THICK_LABELS = [18, 30, 40];
+let spSliderThickMm = 0;
+let spThickDragging = false;
+
+function spLengthFromPct(pct) { return Math.round(SP_LENGTH_MIN + pct * (SP_LENGTH_MAX - SP_LENGTH_MIN)); }
+function spPctFromLength(mm)  { return (mm - SP_LENGTH_MIN) / (SP_LENGTH_MAX - SP_LENGTH_MIN); }
+function spLengthTierKey(mm) {
+  if (mm <= 900)  return '900';
+  if (mm <= 1200) return '1200';
+  if (mm <= 1500) return '1500';
+  if (mm <= 1800) return '1800';
+  if (mm <= 2100) return '2100';
+  if (mm <= 2400) return '2400';
+  return 'custom';
+}
+
+function spThickFromPct(pct)  { return Math.round(SP_THICK_MIN + pct * (SP_THICK_MAX - SP_THICK_MIN)); }
+function spPctFromThick(mm)   { return (mm - SP_THICK_MIN) / (SP_THICK_MAX - SP_THICK_MIN); }
+function spThickTierKey(mm) {
+  if (mm <= 18) return '18';
+  if (mm <= 30) return '30';
+  if (mm <= 40) return '40';
+  return 'custom';
+}
+
+function spInitWidthSlider() {
+  spMakeSlider({
+    trackId: 'sp-width-track', thumbId: 'sp-width-thumb',
+    fillId: 'sp-width-fill', markersId: 'sp-width-markers',
+    readoutId: 'sp-width-readout', labelRowId: 'sp-width-label-row',
+    labelEndId: 'sp-width-label-larger',
+    tiers: SP_TIER_MARKERS, mmLabels: SP_MM_LABELS,
+    fromPct: spWidthFromPct, pctFrom: spPctFromWidth, tierKey: spWidthTierKey,
+    stateKey: 'width', minMm: SP_WIDTH_MIN, maxMm: SP_WIDTH_MAX,
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  spInitWidthSlider();
+  spInitLengthSlider();
+  spInitThicknessSlider();
+  // Trigger at pct=0 to populate readout, state, and diagram on load
+  spSliderForceApply('sp-width-track',     0, spWidthFromPct,  spWidthTierKey,  'width',     'sp-width-readout',     'sp-width-fill');
+  spSliderForceApply('sp-length-track',    0, spLengthFromPct, spLengthTierKey, 'length',    'sp-length-readout',    'sp-length-fill');
+  spSliderForceApply('sp-thickness-track', 0, spThickFromPct,  spThickTierKey,  'thickness', 'sp-thickness-readout', 'sp-thickness-fill');
+  spDrawPanel();
+});
+
+function spSliderForceApply(trackId, pct, fromPct, tierKey, stateKey, readoutId, fillId) {
+  const thumb   = document.getElementById(trackId.replace('-track', '-thumb'));
+  const fill    = document.getElementById(fillId);
+  const readout = document.getElementById(readoutId);
+  if (!thumb) return;
+  const mm = fromPct(pct);
+  thumb.style.left = '0%';
+  if (fill) fill.style.width = '0%';
+  const tk = tierKey(mm);
+  const isCustom = tk === 'custom';
+  if (readout) {
+    readout.textContent = mm + 'mm' + (isCustom ? ' — enquiry only' : '');
+    readout.style.color = isCustom ? '#c0392b' : '#0D8543';
+  }
+  spState[stateKey] = tk;
+  if (stateKey === 'width')     spSliderWidthMm = mm;
+  if (stateKey === 'length')    spSliderLengthMm = mm;
+  if (stateKey === 'thickness') spSliderThickMm = mm;
+}
+
+
+function spMakeSlider(cfg) {
+  const { trackId, thumbId, fillId, markersId, readoutId, labelRowId,
+          labelEndId, tiers, mmLabels, fromPct, pctFrom, tierKey,
+          stateKey, mmRef, draggingRef, draggingKey, minMm, maxMm } = cfg;
+
+  const track    = document.getElementById(trackId);
+  const thumb    = document.getElementById(thumbId);
+  const fill     = document.getElementById(fillId);
+  const markers  = document.getElementById(markersId);
+  const readout  = document.getElementById(readoutId);
+  const labelRow = document.getElementById(labelRowId);
+  if (!track || !thumb) return;
+
+  // Render markers
+  markers.innerHTML = '';
+  tiers.forEach(({ mm, label, size }) => {
+    const pct = pctFrom(mm) * 100;
+    const m = document.createElement('div');
+    m.className = 'sp-slider-marker';
+    m.style.left = pct + '%';
+    m.innerHTML = '<div class="sp-slider-marker-tick" style="height:' + size + 'px;"></div>'
+      + '<div style="font-size:' + (10 + (size-8)*0.5) + 'px; color:#bbb; margin-top:2px; line-height:1;">' + label + '</div>';
+    markers.appendChild(m);
+  });
+
+  // No mm labels on track
+  if (labelRow) labelRow.innerHTML = '';
+
+  function getPct(clientX) {
+    const rect = track.getBoundingClientRect();
+    return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  }
+
+  function applyPct(pct) {
+    const mm = fromPct(pct);
+    cfg.currentMm = mm;
+    thumb.style.left = (pct * 100) + '%';
+    fill.style.width  = (pct * 100) + '%';
+    const tk = tierKey(mm);
+    const isCustom = tk === 'custom';
+    if (readout && !readout._editing) {
+      readout.textContent = mm + 'mm' + (isCustom ? ' — enquiry only' : '');
+      readout.style.color = isCustom ? '#c0392b' : '#0D8543';
+    }
+    const activeMm = isCustom ? -1 : parseInt(tk);
+    if (labelRow) labelRow.querySelectorAll('.sp-slider-label').forEach(el => {
+      el.classList.toggle('active', parseInt(el.dataset.mm) === activeMm);
+    });
+    const le = document.getElementById(labelEndId);
+    if (le) le.classList.toggle('active', isCustom);
+    spState[stateKey] = tk;
+    if (stateKey === 'width')     spSliderWidthMm = mm;
+    if (stateKey === 'length')    spSliderLengthMm = mm;
+    if (stateKey === 'thickness') spSliderThickMm = mm;
+    spDrawPanel();
+    spUpdate();
+  }
+
+  function applyMm(mm) {
+    const min = cfg.minMm, max = cfg.maxMm;
+    const clamped = Math.max(min, Math.min(max, mm));
+    const pct = (clamped - min) / (max - min);
+    applyPct(pct);
+  }
+
+  // Make readout click-to-edit and tab-focusable
+  if (readout) {
+
+    readout.style.cursor = 'text';
+    readout.title = 'Click or press Enter to type a value';
+
+    function spOpenReadoutEdit() {
+      if (readout._editing) return;
+      readout._editing = true;
+      const currentMm = cfg.currentMm || cfg.minMm;
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.value = currentMm;
+      input.min = cfg.minMm;
+      input.max = cfg.maxMm;
+      input.style.cssText = 'width:100%; font-family:inherit; font-size:inherit; font-weight:inherit; color:inherit; background:transparent; border:none; border-bottom:2px solid #0D8543; outline:none; padding:0; margin:0;';
+      readout.innerHTML = '';
+      readout.appendChild(input);
+      input.focus();
+      input.select();
+
+      function commit() {
+        const val = parseInt(input.value);
+        readout._editing = false;
+        if (!isNaN(val)) {
+          applyMm(val);
+        } else {
+          // Restore display
+          const tk = tierKey(cfg.currentMm || cfg.minMm);
+          const isCustom = tk === 'custom';
+          readout.textContent = (cfg.currentMm || cfg.minMm) + 'mm' + (isCustom ? ' — enquiry only' : '');
+        }
+      }
+
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); commit(); }
+        if (e.key === 'Escape') { readout._editing = false; applyPct((cfg.currentMm - cfg.minMm) / (cfg.maxMm - cfg.minMm)); }
+        if (e.key === 'Tab') {
+          // Commit value, restore readout, then let Tab/Shift+Tab move focus naturally
+          e.preventDefault();
+          commit();
+          // Find all tabbable readouts and move focus
+          const readouts = Array.from(document.querySelectorAll('.sp-slider-readout[tabindex="0"]'));
+          const idx = readouts.indexOf(readout);
+          const next = e.shiftKey ? readouts[idx - 1] : readouts[idx + 1];
+          if (next) {
+            next.focus();
+          } else if (e.shiftKey) {
+            // Move focus to the last species button
+            const speciesBtns = document.querySelectorAll('.sp-opt-btn[data-group="species"]');
+            if (speciesBtns.length) speciesBtns[speciesBtns.length - 1].focus();
+          }
+        }
+      });
+      input.addEventListener('blur', function() {
+        // Only commit on blur if not triggered by our Tab handler
+        if (readout._editing) commit();
+      });
+    }
+
+    readout.addEventListener('click', spOpenReadoutEdit);
+    readout.addEventListener('focus', function(e) {
+      // Only auto-open on keyboard focus (not mouse click, which fires its own handler)
+      if (!readout._mousedown) spOpenReadoutEdit();
+    });
+    readout.addEventListener('mousedown', function() { readout._mousedown = true; });
+    readout.addEventListener('mouseup', function() { setTimeout(function() { readout._mousedown = false; }, 0); });
+    readout.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        spOpenReadoutEdit();
+      }
+    });
+  }
+
+  // Make slider thumb not focusable via tab
+  if (thumb) thumb.setAttribute('tabindex', '-1');
+
+  let isDragging = false;
+  function onStart(e) {
+    isDragging = true; thumb.classList.add('dragging');
+    applyPct(getPct(e.touches ? e.touches[0].clientX : e.clientX));
+    e.preventDefault();
+  }
+  function onMove(e) {
+    if (!isDragging) return;
+    applyPct(getPct(e.touches ? e.touches[0].clientX : e.clientX));
+    e.preventDefault();
+  }
+  function onEnd() { isDragging = false; thumb.classList.remove('dragging'); }
+
+  track.addEventListener('mousedown', onStart);
+  track.addEventListener('touchstart', onStart, { passive: false });
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('mouseup', onEnd);
+  window.addEventListener('touchend', onEnd);
+}
+
+function spInitLengthSlider() {
+  spMakeSlider({
+    trackId: 'sp-length-track', thumbId: 'sp-length-thumb',
+    fillId: 'sp-length-fill', markersId: 'sp-length-markers',
+    readoutId: 'sp-length-readout', labelRowId: 'sp-length-label-row',
+    labelEndId: 'sp-length-label-larger',
+    tiers: SP_LENGTH_TIERS, mmLabels: SP_LENGTH_LABELS,
+    fromPct: spLengthFromPct, pctFrom: spPctFromLength, tierKey: spLengthTierKey,
+    stateKey: 'length', minMm: SP_LENGTH_MIN, maxMm: SP_LENGTH_MAX,
+  });
+}
+
+function spInitThicknessSlider() {
+  spMakeSlider({
+    trackId: 'sp-thickness-track', thumbId: 'sp-thickness-thumb',
+    fillId: 'sp-thickness-fill', markersId: 'sp-thickness-markers',
+    readoutId: 'sp-thickness-readout', labelRowId: 'sp-thickness-label-row',
+    labelEndId: 'sp-thickness-label-larger',
+    tiers: SP_THICK_TIERS, mmLabels: SP_THICK_LABELS,
+    fromPct: spThickFromPct, pctFrom: spPctFromThick, tierKey: spThickTierKey,
+    stateKey: 'thickness', minMm: SP_THICK_MIN, maxMm: SP_THICK_MAX,
+  });
+}
+
+function spShowDragHint() {
+  const hint = document.getElementById('sp-drag-hint');
+  if (!hint) return;
+  hint.style.display = 'block';
+  hint.style.opacity = '1';
+  clearTimeout(hint._timer);
+  hint._timer = setTimeout(() => {
+    hint.style.transition = 'opacity 1s';
+    hint.style.opacity = '0';
+    setTimeout(() => { hint.style.display = 'none'; hint.style.transition = ''; }, 1000);
+  }, 2500);
+}
+
+function spInitDrag() {
+  const svg = document.getElementById('sp-panel-svg');
+  if (!svg || svg._dragInited) return;
+  svg._dragInited = true;
+  let dragging = false;
+
+  function getSVGPos(e) {
+    const rect = svg.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: (clientX - rect.left) / rect.width * 480,
+      y: (clientY - rect.top)  / rect.height * 220
+    };
+  }
+
+  function onStart(e) {
+    if (!spAddons.cablehole) return;
+    const hole = document.getElementById('sp-cable-hole-group');
+    if (!hole) return;
+    // Check proximity to hole centre
+    const pos = getSVGPos(e);
+    const cx = parseFloat(hole.getAttribute('data-cx'));
+    const cy = parseFloat(hole.getAttribute('data-cy'));
+    if (Math.abs(pos.x - cx) < 30 && Math.abs(pos.y - cy) < 30) {
+      dragging = true;
+      e.preventDefault();
+    }
+  }
+
+  function onMove(e) {
+    if (!dragging) return;
+    e.preventDefault();
+    const pos = getSVGPos(e);
+    // Constrain to panel face bounds (approximate)
+    const panelBounds = spGetPanelBounds();
+    const nx = Math.max(0.05, Math.min(0.95, (pos.x - panelBounds.x0) / panelBounds.w));
+    const ny = Math.max(0.05, Math.min(0.95, (pos.y - panelBounds.y0) / panelBounds.h));
+    spCableHolePos = { x: nx, y: ny };
+    spDrawPanel();
+  }
+
+  function onEnd() { dragging = false; }
+
+  svg.addEventListener('mousedown', onStart);
+  svg.addEventListener('touchstart', onStart, { passive: false });
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('mouseup', onEnd);
+  window.addEventListener('touchend', onEnd);
+}
+
+function spGetPanelBounds() {
+  const svg = document.getElementById('sp-panel-svg');
+  return svg && svg._panelBounds ? svg._panelBounds : { x0: 60, y0: 20, w: 340, h: 110 };
+}
+
+function spDrawPanel() {
+  const svg = document.getElementById('sp-panel-svg');
+  const viz = document.getElementById('sp-panel-viz');
+  if (!svg) return;
+
+  const hasSize = spState.length && spState.width && spState.thickness
+    && spState.length !== 'custom' && spState.width !== 'custom' && spState.thickness !== 'custom';
+
+  // Show preview as soon as we have mm values (set at init)
+  const hasMm = spSliderLengthMm > 0 && spSliderWidthMm > 0 && spSliderThickMm > 0;
+  if (!hasMm) { viz.style.display = 'none'; return; }
+  viz.style.display = 'block';
+
+  const lengthMm = spSliderLengthMm > 0 ? spSliderLengthMm : parseInt(spState.length) || 900;
+  const widthMm  = spSliderWidthMm  > 0 ? spSliderWidthMm  : parseInt(spState.width)  || 400;
+  const thickMm  = spSliderThickMm  > 0 ? spSliderThickMm  : parseInt(spState.thickness) || 18;
+
+  const edge    = spAddons.roundover ? 'round' : spAddons.chamfer ? 'chamfer' : 'square';
+  const hasHole = spAddons.cablehole;
+
+  // Scale so the panel always fills the SVG width
+  // SVG viewBox width = 560. Usable width = 560 - ox(55) - rightLabels(90) = 415px
+  // panelW + skewX = lengthMm*scale + widthMm*scale*0.5
+  // scale = 415 / (lengthMm + widthMm*0.5)
+  const usableW = 415;
+  const scale = usableW / (lengthMm + widthMm * 0.5);
+  const panelW = lengthMm * scale;
+  const skewX  = widthMm  * scale * 0.50;
+  const skewY  = widthMm  * scale * 0.47 * 0.50;
+  const panelH = thickMm  * scale;
+
+  // Origin: back-left-top corner
+  const ox = 55, oy = 55;
+
+  // Key corners
+  const A  = { x: ox,             y: oy };              // back-left-top
+  const B  = { x: ox + panelW,    y: oy };              // back-right-top
+  const C  = { x: ox + panelW + skewX, y: oy + skewY }; // front-right-top
+  const D  = { x: ox + skewX,     y: oy + skewY };      // front-left-top
+  const D2 = { x: D.x,            y: D.y + panelH };    // front-left-bottom
+  const C2 = { x: C.x,            y: C.y + panelH };    // front-right-bottom
+  const B2 = { x: B.x,            y: B.y + panelH };    // back-right-bottom
+
+  // Timber colours per species (top face, front face, side face, stroke, grain)
+  const speciesColours = {
+    radiata_pine:    { top: '#f0e0b0', front: '#dcc888', side: '#c8b470', stroke: '#8a6a2e', grain: '#8a6a2e' },
+    european_beech:  { top: '#e8c898', front: '#d4b07a', side: '#bea060', stroke: '#7a5a28', grain: '#7a5a28' },
+    pacific_kauri:   { top: '#dfc080', front: '#c8a860', side: '#b89448', stroke: '#705828', grain: '#705828' },
+    white_ash:       { top: '#e0d0a8', front: '#c8b888', side: '#b0a070', stroke: '#6a5830', grain: '#6a5830' },
+    macrocarpa:      { top: '#d4a860', front: '#bc9048', side: '#a87c38', stroke: '#604820', grain: '#604820' },
+    maple:           { top: '#f0d898', front: '#dcc070', side: '#c8aa58', stroke: '#806030', grain: '#806030' },
+    purpleheart:     { top: '#7a5890', front: '#604878', side: '#4c3860', stroke: '#2a1840', grain: '#6a4880' },
+    kwila:           { top: '#a05830', front: '#884020', side: '#703018', stroke: '#401808', grain: '#401808' },
+    cherry:          { top: '#c07050', front: '#a85838', side: '#904828', stroke: '#502010', grain: '#502010' },
+    iroko:           { top: '#c89858', front: '#b08040', side: '#987030', stroke: '#584018', grain: '#584018' },
+    island_rosewood: { top: '#984838', front: '#803028', side: '#682018', stroke: '#380c08', grain: '#380c08' },
+    sapele:          { top: '#b06840', front: '#985028', side: '#803818', stroke: '#481808', grain: '#481808' },
+    nz_rimu:         { top: '#c06830', front: '#a85020', side: '#903810', stroke: '#501808', grain: '#501808' },
+    white_oak:       { top: '#d4b878', front: '#bca060', side: '#a08848', stroke: '#604828', grain: '#604828' },
+    black_walnut:    { top: '#4a3020', front: '#382018', side: '#281408', stroke: '#180800', grain: '#3a2010' },
+  };
+  const defaultColour = { top: '#d4b896', front: '#c4a07e', side: '#b8976e', stroke: '#7a5530', grain: '#7a5530' };
+  const greyColour   = { top: '#d8d8d4', front: '#c0c0bc', side: '#a8a8a4', stroke: '#888884', grain: '#888884' };
+  const tc = spState.species ? (speciesColours[spState.species] || defaultColour) : greyColour;
+  const wood   = tc.top;
+  const woodDk = tc.front;
+  const woodSd = tc.side;
+  const stroke = tc.stroke;
+
+  function p(pt) { return pt.x + ',' + pt.y; }
+
+  // Cable hole SVG — 50mm diameter in real scale, near back edge centre
+  let holeEl = '';
+  if (hasHole) {
+    const hx = A.x + 0.5 * panelW + 0.1 * skewX;
+    const hy = A.y + 0.5 * 0       + 0.1 * skewY;
+    // 50mm radius in panel scale
+    const hr = 25 * scale;
+    const hry = hr * 0.38;
+    holeEl = `<g id="sp-cable-hole-group">
+      <ellipse cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" rx="${hr.toFixed(1)}" ry="${hry.toFixed(1)}" fill="#3a2010" stroke="${stroke}" stroke-width="1" opacity="0.9"/>
+      <ellipse cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" rx="${hr.toFixed(1)}" ry="${hry.toFixed(1)}" fill="none" stroke="#c8a87a" stroke-width="1.2" opacity="0.55"/>
+    </g>`;
+  }
+
+  // Grain lines on top face (parallel to length axis, spaced along depth)
+  const grainSteps = 4;
+  let grainLines = '<g opacity="0.15">';
+  for (let i = 1; i < grainSteps; i++) {
+    const t  = i / grainSteps;
+    const x1 = A.x + t * skewX;
+    const y1 = A.y + t * skewY;
+    const x2 = x1 + panelW;
+    const y2 = y1;
+    grainLines += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${tc.grain}" stroke-width="0.8"/>`;
+  }
+  grainLines += '</g>';
+
+  // Dimension label positions
+  const dimY   = D2.y + 16;
+  const dimLx  = (D2.x + C2.x) / 2;
+  // Width arrow: offset along perpendicular to D vector, nudged outward
+  const wAx1 = B.x + 13, wAy1 = B.y - 6;
+  const wAx2 = C.x + 13, wAy2 = C.y - 6;
+  const wLx  = wAx2 + 8, wLy  = (wAy1 + wAy2) / 2 + 4;
+  // Thickness arrow
+  const tAx  = C2.x + 16;
+
+  // Inset box position — bottom left
+  const insetX = 30, insetY = 220;
+  const insetW = 148, insetH = 92;
+
+  // Inset cross-section
+  const csX = insetX + 14, csY = insetY + 12;
+  const csW = 80, csH = insetH - 22;
+  const r = 14; // roundover radius in inset
+
+  let insetProfile = '';
+  let insetLabel = '';
+  let edgeNote = '';
+
+  if (edge === 'round') {
+    insetProfile = `<path d="M ${csX},${csY} L ${csX+csW-r},${csY} Q ${csX+csW},${csY} ${csX+csW},${csY+r} L ${csX+csW},${csY+csH} L ${csX},${csY+csH} Z"
+      fill="${tc.top}" stroke="${tc.stroke}" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="M ${csX+csW-r},${csY} Q ${csX+csW},${csY} ${csX+csW},${csY+r}"
+      fill="none" stroke="${tc.front}" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M ${csX+csW-r},${csY} A ${r},${r} 0 0 0 ${csX+csW},${csY+r}" fill="none" stroke="#aaa" stroke-width="0.9" stroke-dasharray="3,2"/>
+    <text x="${csX+csW-r-4}" y="${csY+r+10}" text-anchor="end" font-size="11" fill="#888" font-family="inherit">r</text>`;
+    insetLabel = 'Edge detail — roundover';
+    edgeNote = 'Roundover applied to your choice of edges — specify below.';
+  } else if (edge === 'chamfer') {
+    const ch = 14;
+    insetProfile = `<path d="M ${csX},${csY} L ${csX+csW-ch},${csY} L ${csX+csW},${csY+ch} L ${csX+csW},${csY+csH} L ${csX},${csY+csH} Z"
+      fill="${tc.top}" stroke="${tc.stroke}" stroke-width="1.2" stroke-linejoin="miter"/>
+    <line x1="${csX+csW-ch}" y1="${csY}" x2="${csX+csW}" y2="${csY+ch}"
+      stroke="${stroke}" stroke-width="2" stroke-linecap="round"/>
+    <path d="M ${csX+csW-ch+4},${csY+4} A 8,8 0 0 0 ${csX+csW-4},${csY+ch-4}" fill="none" stroke="#aaa" stroke-width="0.9" stroke-linecap="round"/>
+    <text x="${csX+csW-ch-2}" y="${csY+ch+10}" text-anchor="end" font-size="11" fill="#888" font-family="inherit">45°</text>`;
+    insetLabel = 'Edge detail — chamfer';
+    edgeNote = 'Chamfer applied to your choice of edges — specify below.';
+  }
+
+  // Grain in inset cross-section
+  let insetGrain = '';
+  if (edge !== 'square') {
+    insetGrain = '<g opacity="0.11">';
+    for (let i = 1; i <= 3; i++) {
+      const gy = csY + i * (csH / 4);
+      insetGrain += `<line x1="${csX}" y1="${gy.toFixed(0)}" x2="${csX+csW}" y2="${gy.toFixed(0)}" stroke="${stroke}" stroke-width="0.8"/>`;
+    }
+    insetGrain += '</g>';
+  }
+
+  const showInset = edge !== 'square';
+
+  // Leader line from front-left-bottom corner
+  const leaderX2 = insetX + insetW * 0.45;
+  const leaderY2 = insetY - 3;
+
+  // SVG viewBox height — only expand for inset when edge profile is selected
+  const svgH = showInset
+    ? Math.max(D2.y + 50, insetY + insetH + 16)
+    : Math.round(D2.y + 50);
+
+  svg.setAttribute('viewBox', `0 0 560 ${svgH}`);
+
+  svg.innerHTML = `
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+
+    <!-- Left face: A, D, D2, A2 where A2 = A + H -->
+    <path d="M ${p(A)} L ${p(D)} L ${p(D2)} L ${A.x},${A.y+panelH} Z"
+          fill="${woodDk}" stroke="${stroke}" stroke-width="1.2" stroke-linejoin="miter"/>
+
+    <!-- Right face -->
+    <path d="M ${p(B)} L ${p(C)} L ${p(C2)} L ${p(B2)} Z"
+          fill="${woodSd}" stroke="${stroke}" stroke-width="1.2" stroke-linejoin="miter"/>
+
+    <!-- Front face -->
+    <path d="M ${p(D)} L ${p(C)} L ${p(C2)} L ${p(D2)} Z"
+          fill="${woodDk}" stroke="${stroke}" stroke-width="1.2" stroke-linejoin="miter"/>
+
+    <!-- Top face -->
+    <path d="M ${p(A)} L ${p(B)} L ${p(C)} L ${p(D)} Z"
+          fill="${wood}" stroke="${stroke}" stroke-width="1.5" stroke-linejoin="miter"/>
+
+    ${grainLines}
+    ${holeEl}
+
+    <!-- Dimension: length -->
+    <line x1="${D2.x}" y1="${dimY}" x2="${C2.x}" y2="${dimY}" stroke="#aaa" stroke-width="1"
+          marker-start="url(#arr)" marker-end="url(#arr)"/>
+    <text x="${dimLx}" y="${dimY+14}" text-anchor="middle" font-size="11" fill="#888" font-family="inherit">${lengthMm}mm</text>
+
+    <!-- Dimension: width (parallel to D vector) -->
+    <line x1="${wAx1}" y1="${wAy1}" x2="${wAx2}" y2="${wAy2}" stroke="#aaa" stroke-width="1"
+          marker-start="url(#arr)" marker-end="url(#arr)"/>
+    <text x="${wLx}" y="${wLy}" text-anchor="start" font-size="11" fill="#888" font-family="inherit">${widthMm}mm</text>
+
+    <!-- Dimension: thickness -->
+    <line x1="${tAx}" y1="${C.y}" x2="${tAx}" y2="${C2.y}" stroke="#aaa" stroke-width="1"
+          marker-start="url(#arr)" marker-end="url(#arr)"/>
+    <text x="${tAx+6}" y="${(C.y+C2.y)/2+4}" text-anchor="start" font-size="11" fill="#888" font-family="inherit">${thickMm}mm</text>
+
+    ${showInset ? `
+    <!-- Leader line -->
+    <line x1="${D2.x}" y1="${D2.y}" x2="${leaderX2}" y2="${leaderY2}"
+          stroke="#bbb" stroke-width="0.8" stroke-dasharray="4,3"/>
+    <circle cx="${D2.x}" cy="${D2.y}" r="3" fill="none" stroke="#bbb" stroke-width="0.9"/>
+
+    <!-- Inset box -->
+    <rect x="${insetX}" y="${insetY}" width="${insetW}" height="${insetH}" rx="3"
+          fill="#fafaf8" stroke="#d4d4d4" stroke-width="1"/>
+
+    ${insetProfile}
+    ${insetGrain}
+
+    <text x="${insetX + insetW/2}" y="${insetY - 6}" text-anchor="middle" font-size="11" fill="#888" font-family="inherit">${insetLabel}</text>
+    <text x="${insetX + insetW + 10}" y="${insetY + 18}" text-anchor="start" font-size="11" fill="#aaa" font-family="inherit" font-style="italic">
+      <tspan x="${insetX + insetW + 10}" dy="0">${edgeNote.split(' — ')[0]} —</tspan>
+      <tspan x="${insetX + insetW + 10}" dy="15">${edgeNote.split(' — ')[1] || ''}</tspan>
+    </text>
+    ` : ''}
+  `;
+
+  // Store panel bounds for drag
+  svg._panelBounds = { x0: A.x, y0: A.y, w: panelW, h: skewY };
+}
+
+function spToggleDelivery() {
+  const wrap = document.getElementById('sp-address-wrap');
+  if (wrap) wrap.style.display = spState.delivery === 'delivery' ? 'block' : 'none';
+  if (spState.delivery !== 'delivery') {
+    spSelectedAddress = '';
+    const input = document.getElementById('sp-address');
+    if (input) input.value = '';
+  }
+}
+
+function spTogglePopover(e, id) {
+  e.stopPropagation();
+  const popover = document.getElementById(id);
+  const isVisible = popover.classList.contains('visible');
+  document.querySelectorAll('.sp-popover.visible').forEach(p => p.classList.remove('visible'));
+  if (!isVisible) popover.classList.add('visible');
+}
+
+document.addEventListener('click', function() {
+  document.querySelectorAll('.sp-popover.visible').forEach(p => p.classList.remove('visible'));
+});
+
+function spAddressLookup() {
+  clearTimeout(spAddressTimer);
+  const input = document.getElementById('sp-address');
+  const suggestions = document.getElementById('sp-address-suggestions');
+  spSelectedAddress = '';
+  const q = input.value.trim();
+  if (q.length < 3) { suggestions.style.display = 'none'; return; }
+  spAddressTimer = setTimeout(() => {
+    fetch('https://nominatim.openstreetmap.org/search?format=json&countrycodes=nz&limit=5&q=' + encodeURIComponent(q))
+      .then(r => r.json())
+      .then(results => {
+        suggestions.innerHTML = '';
+        if (!results.length) { suggestions.style.display = 'none'; return; }
+        results.forEach(r => {
+          const div = document.createElement('div');
+          div.textContent = r.display_name;
+          div.onclick = () => {
+            input.value = r.display_name;
+            spSelectedAddress = r.display_name;
+            suggestions.style.display = 'none';
+          };
+          suggestions.appendChild(div);
+        });
+        suggestions.style.display = 'block';
+      })
+      .catch(() => { suggestions.style.display = 'none'; });
+  }, 350);
+}
+
+document.addEventListener('click', function(e) {
+  const suggestions = document.getElementById('sp-address-suggestions');
+  const input = document.getElementById('sp-address');
+  if (suggestions && input && !input.contains(e.target) && !suggestions.contains(e.target)) {
+    suggestions.style.display = 'none';
+  }
+});
+
+function spUpdate() {
+  const elPrice   = document.getElementById('sp-price');
+  const elEnquiry = document.getElementById('sp-enquiry');
+  const elContact = document.getElementById('sp-contact');
+  const elSubmit  = document.getElementById('sp-submit');
+
+  elPrice.style.display   = 'none';
+  elEnquiry.style.display = 'none';
+  elContact.classList.remove('visible');
+
+  // Hide badge
+  const badge = document.getElementById('sp-price-badge');
+  if (badge) { badge.style.display = 'none'; badge.dataset.hasPrice = 'false'; }
+
+  // Show/hide the "complete selection" nudge
+  const nudge = document.getElementById('sp-price-nudge');
+  if (nudge) nudge.style.display = 'none';
+
+  spDrawPanel();
+  if (!spState.species || !spState.width || !spState.length || !spState.thickness) {
+    if (nudge) nudge.style.display = 'block';
+    return;
+  }
+
+  const needsEnquiry = spState.width === 'custom'
+    || spState.length === 'custom'
+    || spState.thickness === 'custom';
+
+  if (needsEnquiry) {
+    elEnquiry.style.display = 'block';
+    elContact.classList.add('visible');
+    elSubmit.textContent = 'Send enquiry';
+    return;
+  }
+
+  const basePrice = SP_PRICES[spState.species]?.[parseInt(spState.width)]?.[parseInt(spState.thickness)]?.[parseInt(spState.length)];
+
+  if (!basePrice) {
+    elEnquiry.style.display = 'block';
+    elContact.classList.add('visible');
+    elSubmit.textContent = 'Send enquiry';
+    return;
+  }
+
+  const addonTotal = (spAddons.roundover ? SP_ADDON_PRICES.roundover : 0)
+    + (spAddons.chamfer ? SP_ADDON_PRICES.chamfer : 0)
+    + (spAddons.cablehole ? SP_ADDON_PRICES.cablehole : 0)
+    + (spAddons.osmo ? SP_ADDON_PRICES.osmo : 0);
+
+  const total = basePrice + addonTotal;
+  const hasAddons = addonTotal > 0;
+
+  document.getElementById('sp-price-out').textContent = '$' + total.toFixed(2);
+
+  const breakdown = document.getElementById('sp-price-breakdown');
+  if (hasAddons) {
+    document.getElementById('sp-base-out').textContent = '$' + basePrice.toFixed(2);
+    document.getElementById('sp-addon-roundover-row').style.display = spAddons.roundover ? 'flex' : 'none';
+    document.getElementById('sp-addon-chamfer-row').style.display   = spAddons.chamfer   ? 'flex' : 'none';
+    document.getElementById('sp-addon-cablehole-row').style.display = spAddons.cablehole ? 'flex' : 'none';
+    document.getElementById('sp-addon-osmo-row').style.display      = spAddons.osmo      ? 'flex' : 'none';
+    document.getElementById('sp-total-out').textContent = '$' + total.toFixed(2);
+    breakdown.style.display = 'block';
+  } else {
+    breakdown.style.display = 'none';
+  }
+
+  elPrice.style.display = 'block';
+  elContact.classList.add('visible');
+  elSubmit.textContent = 'Submit quote request';
+
+  // Update floating badge
+  const priceBadge = document.getElementById('sp-price-badge');
+  const priceBadgeVal = document.getElementById('sp-badge-value');
+  if (priceBadge && priceBadgeVal) {
+    priceBadge.style.display = 'block';
+    priceBadge.dataset.hasPrice = 'true';
+    priceBadgeVal.textContent = '$' + total.toFixed(2);
+  }
+}
+
+function spSubmit() {
+  const name  = document.getElementById('sp-name').value.trim();
+  const email = document.getElementById('sp-email').value.trim();
+  const phone = document.getElementById('sp-phone').value.trim();
+  const msg   = document.getElementById('sp-msg').value.trim();
+  const err   = document.getElementById('sp-err');
+
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!name || !emailValid) { err.style.display = 'block'; return; }
+  err.style.display = 'none';
+
+  const needsEnquiry = spState.width === 'custom'
+    || spState.length === 'custom'
+    || spState.thickness === 'custom';
+
+  const basePrice = SP_PRICES[spState.species]?.[parseInt(spState.width)]?.[parseInt(spState.thickness)]?.[parseInt(spState.length)];
+  const addonTotal = (spAddons.roundover ? 65 : 0) + (spAddons.chamfer ? 65 : 0) + (spAddons.cablehole ? 75 : 0) + (spAddons.osmo ? 108 : 0);
+  const total = basePrice ? basePrice + addonTotal : null;
+  const priceInfo = needsEnquiry ? 'N/A (custom enquiry)' : (total ? '$' + total.toFixed(2) + ' +GST' : 'N/A');
+
+  const addonList = [];
+  if (spAddons.roundover) addonList.push('Roundover edges (+$65)');
+  if (spAddons.chamfer)   addonList.push('Chamfer edges (+$65)');
+  if (spAddons.cablehole) {
+    addonList.push('Cable hole (+$75) — position to be specified');
+  }
+  if (spAddons.osmo)      addonList.push('Osmo PolyX finish 750ml (+$108, self-applied)');
+
+  const deliveryInfo = spState.delivery === 'delivery'
+    ? 'Delivery — ' + (spSelectedAddress || document.getElementById('sp-address').value.trim() || 'Address not provided')
+    : spState.delivery === 'pickup' ? 'Pickup (free)' : 'Not selected';
+
+  const btn = document.getElementById('sp-submit');
+  btn.disabled = true; btn.textContent = 'Sending…';
+
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('email', email);
+  formData.append('phone', phone || 'Not provided');
+  formData.append('tier', spState.tier ? SP_TIERS[spState.tier].label : 'Not selected');
+  formData.append('species', spState.species ? SP_SPECIES_NAMES[spState.species] : 'Not selected');
+  formData.append('length', spSliderLengthMm > 0 ? spSliderLengthMm + 'mm (tier: up to ' + spState.length + 'mm)' : spState.length ? 'Up to ' + spState.length + 'mm' : 'Not selected');
+  formData.append('width', spSliderWidthMm > 0 ? spSliderWidthMm + 'mm (tier: up to ' + spState.width + 'mm)' : spState.width ? 'Up to ' + spState.width + 'mm' : 'Not selected');
+  formData.append('thickness', spSliderThickMm > 0 ? spSliderThickMm + 'mm (tier: up to ' + spState.thickness + 'mm)' : spState.thickness ? 'Up to ' + spState.thickness + 'mm' : 'Not selected');
+  formData.append('addons', addonList.length ? addonList.join(', ') : 'None');
+  formData.append('collection_delivery', deliveryInfo);
+  formData.append('estimated_price', priceInfo);
+  formData.append('enquiry_type', needsEnquiry ? 'Custom enquiry (no instant price)' : 'Quote request');
+  formData.append('message', msg || 'None');
+
+  fetch('https://formspree.io/f/xdabvwvj', {
+    method: 'POST',
+    headers: { 'Accept': 'application/json' },
+    body: formData
+  })
+  .then(r => {
+    if (r.ok) {
+      document.getElementById('sp-form').style.display = 'none';
+      const successEl = document.getElementById('sp-success');
+      successEl.style.display = 'block';
+      successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else { throw new Error(); }
+  })
+  .catch(() => {
+    btn.disabled = false;
+    btn.textContent = needsEnquiry ? 'Send enquiry' : 'Submit quote request';
+    err.textContent = 'Something went wrong. Please try again or email us directly.';
+    err.style.display = 'block';
+  });
+}
+</script>
