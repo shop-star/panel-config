@@ -205,6 +205,7 @@
   color: #888;
 }
 .sp-price-breakdown-row { display: flex; justify-content: space-between; margin-top: 4px; }
+.sp-price-breakdown-row.promo { color: #0D8543; font-weight: 500; }
 .sp-price-breakdown-row.total { color: #1a1a1a; font-weight: 500; padding-top: 6px; border-top: 1px solid #e8e8e8; margin-top: 6px; }
 .sp-disclaimer {
   font-size: 0.78em;
@@ -549,6 +550,7 @@
           <div class="sp-price-breakdown-row" id="sp-addon-chamfer-row" style="display:none"><span>Chamfer edges</span><span>+$65.00</span></div>
           <div class="sp-price-breakdown-row" id="sp-addon-cablehole-row" style="display:none"><span>Cable hole</span><span>+$75.00</span></div>
           <div class="sp-price-breakdown-row" id="sp-addon-osmo-row" style="display:none"><span>Osmo PolyX finish (750ml)</span><span>+$108.00</span></div>
+          <div class="sp-price-breakdown-row promo" id="sp-promo-row" style="display:none"><span>Black Friday: panel making free</span><span id="sp-promo-out"></span></div>
           <div class="sp-price-breakdown-row total"><span>Total</span><span id="sp-total-out"></span></div>
         </div>
         <div class="sp-disclaimer">This is an estimate only, subject to confirmation by our team. Prices are subject to availability and valid for 30 days.</div>
@@ -959,6 +961,28 @@ const SP_SPECIES_NAMES = {
 };
 
 const SP_ADDON_PRICES = { roundover: 65, chamfer: 65, cablehole: 75, osmo: 108 };
+
+// Black Friday special: making is free, customer pays for timber only.
+// Applies to enquiries made before the end of November (NZ time); customers must confirm by 7 Dec.
+// Pricing goes back to normal automatically once SP_PROMO_END passes.
+const SP_PROMO_END = new Date('2026-12-01T00:00:00+13:00'); // midnight 30 Nov/1 Dec, NZDT
+const SP_PROMO_LABOUR_SHARE = 0.20;                          // share of the base panel price that is making
+const SP_PROMO_FREE_ADDONS = ['roundover', 'chamfer', 'cablehole']; // machining add-ons, free during the promo
+function spPromoActive() { return Date.now() < SP_PROMO_END.getTime(); }
+
+// Returns { base, addonTotal, discount, total }, or null if there is no instant price for this selection
+function spCalcPrice() {
+  const base = SP_PRICES[spState.species]?.[parseInt(spState.width)]?.[parseInt(spState.thickness)]?.[parseInt(spState.length)];
+  if (!base) return null;
+  const selected = Object.keys(SP_ADDON_PRICES).filter(k => spAddons[k]);
+  const addonTotal = selected.reduce((sum, k) => sum + SP_ADDON_PRICES[k], 0);
+  let discount = 0;
+  if (spPromoActive()) {
+    discount = base * SP_PROMO_LABOUR_SHARE
+      + selected.filter(k => SP_PROMO_FREE_ADDONS.includes(k)).reduce((sum, k) => sum + SP_ADDON_PRICES[k], 0);
+  }
+  return { base, addonTotal, discount, total: base + addonTotal - discount };
+}
 
 const spState = { tier: null, species: null, width: null, length: null, thickness: null, delivery: null };
 let spCableHolePos = { x: 0.5, y: 0.1 }; // normalised: x=along length, y=into width from far edge
@@ -1741,32 +1765,29 @@ function spUpdate() {
     return;
   }
 
-  const basePrice = SP_PRICES[spState.species]?.[parseInt(spState.width)]?.[parseInt(spState.thickness)]?.[parseInt(spState.length)];
+  const price = spCalcPrice();
 
-  if (!basePrice) {
+  if (!price) {
     elEnquiry.style.display = 'block';
     elContact.classList.add('visible');
     elSubmit.textContent = 'Send enquiry';
     return;
   }
 
-  const addonTotal = (spAddons.roundover ? SP_ADDON_PRICES.roundover : 0)
-    + (spAddons.chamfer ? SP_ADDON_PRICES.chamfer : 0)
-    + (spAddons.cablehole ? SP_ADDON_PRICES.cablehole : 0)
-    + (spAddons.osmo ? SP_ADDON_PRICES.osmo : 0);
-
-  const total = basePrice + addonTotal;
-  const hasAddons = addonTotal > 0;
+  const { base: basePrice, discount, total } = price;
+  const showBreakdown = price.addonTotal > 0 || discount > 0;
 
   document.getElementById('sp-price-out').textContent = '$' + total.toFixed(2);
 
   const breakdown = document.getElementById('sp-price-breakdown');
-  if (hasAddons) {
+  if (showBreakdown) {
     document.getElementById('sp-base-out').textContent = '$' + basePrice.toFixed(2);
     document.getElementById('sp-addon-roundover-row').style.display = spAddons.roundover ? 'flex' : 'none';
     document.getElementById('sp-addon-chamfer-row').style.display   = spAddons.chamfer   ? 'flex' : 'none';
     document.getElementById('sp-addon-cablehole-row').style.display = spAddons.cablehole ? 'flex' : 'none';
     document.getElementById('sp-addon-osmo-row').style.display      = spAddons.osmo      ? 'flex' : 'none';
+    document.getElementById('sp-promo-row').style.display = discount > 0 ? 'flex' : 'none';
+    document.getElementById('sp-promo-out').textContent = '−$' + discount.toFixed(2);
     document.getElementById('sp-total-out').textContent = '$' + total.toFixed(2);
     breakdown.style.display = 'block';
   } else {
@@ -1802,10 +1823,12 @@ function spSubmit() {
     || spState.length === 'custom'
     || spState.thickness === 'custom';
 
-  const basePrice = SP_PRICES[spState.species]?.[parseInt(spState.width)]?.[parseInt(spState.thickness)]?.[parseInt(spState.length)];
-  const addonTotal = (spAddons.roundover ? 65 : 0) + (spAddons.chamfer ? 65 : 0) + (spAddons.cablehole ? 75 : 0) + (spAddons.osmo ? 108 : 0);
-  const total = basePrice ? basePrice + addonTotal : null;
-  const priceInfo = needsEnquiry ? 'N/A (custom enquiry)' : (total ? '$' + total.toFixed(2) + ' +GST' : 'N/A');
+  const price = spCalcPrice();
+  const total = price ? price.total : null;
+  let priceInfo = needsEnquiry ? 'N/A (custom enquiry)' : (total ? '$' + total.toFixed(2) + ' +GST' : 'N/A');
+  if (!needsEnquiry && price && price.discount > 0) {
+    priceInfo += ' (Black Friday, timber only. Normal price $' + (price.base + price.addonTotal).toFixed(2) + ', making discount −$' + price.discount.toFixed(2) + ')';
+  }
 
   const addonList = [];
   if (spAddons.roundover) addonList.push('Roundover edges (+$65)');
@@ -1836,6 +1859,9 @@ function spSubmit() {
   formData.append('estimated_price', priceInfo);
   formData.append('enquiry_type', needsEnquiry ? 'Custom enquiry (no instant price)' : 'Quote request');
   formData.append('message', msg || 'None');
+  if (spPromoActive()) {
+    formData.append('black_friday', 'Yes: enquired ' + new Date().toLocaleDateString('en-NZ', { timeZone: 'Pacific/Auckland' }) + ', must confirm by 7 Dec for free making');
+  }
 
   fetch('https://formspree.io/f/xdabvwvj', {
     method: 'POST',
